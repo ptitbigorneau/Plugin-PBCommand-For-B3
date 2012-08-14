@@ -2,7 +2,7 @@
 # Plugin for B3 (www.bigbrotherbot.com)
 # www.ptitbigorneau.fr
 
-pbcommand plugin (v 1.0.5) for B3
+pbcommand plugin (v 1.0.6) for B3
 
 Installation:
 

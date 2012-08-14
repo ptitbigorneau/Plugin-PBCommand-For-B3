@@ -1,7 +1,7 @@
 # PBcommand Plugin
 
 __author__  = 'PtitBigorneau www.ptitbigorneau.fr'
-__version__ = '1.0.5'
+__version__ = '1.0.6'
 
 
 import b3, time, threading, thread, re
@@ -101,6 +101,10 @@ class PbcommandPlugin(b3.plugin.Plugin):
         if gametype==0:
             
             gametype='FreeForAll'
+
+        if gametype==1:
+            
+            gametype='LastManStanding'
 
         if gametype==3:
             
