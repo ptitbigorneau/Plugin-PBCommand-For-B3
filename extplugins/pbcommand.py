@@ -303,10 +303,10 @@ class PbcommandPlugin(b3.plugin.Plugin):
                 elif map[:3] == 'ut_': map = map[3:]
 
                 if maps != "":
-                    maps = maps + ", " + map
+                    maps = maps + ", " + "^5%s^7"%(map)
 
                 else:
-                    maps = map
+                    maps = "^5%s^7"%(map)
 
-        self.client.message('^5%s'%(maps))
+        self.client.message('%s'%(maps))
 
