@@ -19,6 +19,8 @@ class PbcommandPlugin(b3.plugin.Plugin):
     _infoserverlevel = 1
     _adminlevel = 100
     _modolevel = 40
+    _test = None
+    _listmap = []
 
     def onStartup(self):
         
@@ -270,15 +272,20 @@ class PbcommandPlugin(b3.plugin.Plugin):
             map = map.replace("\r","")
             
             if map != "":
+                
+                if self._test == None:
             
-                if map[:4] == 'ut4_': map = map[4:]
-                elif map[:3] == 'ut_': map = map[3:]
-
-                if self.maps != "":
-                    self.maps = self.maps + ", " + map
-
-                else:
-                    self.maps = map
+                    if "{" in map:
+                        self._test = "test"
+                        continue
+            
+                    else:
+                        self._listmap.append(map)
+        
+                    if self._test != None:
+            
+                        if "}" in map:
+                            self._test = None
 
         thread.start_new_thread(self.mapcycle, ())
 
@@ -286,5 +293,20 @@ class PbcommandPlugin(b3.plugin.Plugin):
 
     def mapcycle(self):
 
-        self.client.message('^5%s'%(self.maps))
+        maps = ""
+
+        for map in self._listmap:
+
+            if map != "":
+            
+                if map[:4] == 'ut4_': map = map[4:]
+                elif map[:3] == 'ut_': map = map[3:]
+
+                if maps != "":
+                    maps = maps + ", " + map
+
+                else:
+                    maps = map
+
+        self.client.message('^5%s'%(maps))
 
