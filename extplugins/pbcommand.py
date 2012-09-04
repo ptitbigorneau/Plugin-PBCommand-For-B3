@@ -1,7 +1,7 @@
 # PBcommand Plugin
 
 __author__  = 'PtitBigorneau www.ptitbigorneau.fr'
-__version__ = '1.0.6'
+__version__ = '1.2'
 
 
 import b3, time, threading, thread, re
@@ -13,7 +13,13 @@ import calendar
 class PbcommandPlugin(b3.plugin.Plugin):
 
     _adminPlugin = None
-    
+    _putteamlevel = 20
+    _currentmaplevel = 1
+    _pbcyclemaplevel = 1
+    _infoserverlevel = 1
+    _adminlevel = 100
+    _modolevel = 40
+
     def onStartup(self):
         
         self._adminPlugin = self.console.getPlugin('admin')
@@ -23,19 +29,48 @@ class PbcommandPlugin(b3.plugin.Plugin):
 
         self._adminPlugin.registerCommand(self, 'putteam',self._putteamlevel, self.cmd_putteam)
         self._adminPlugin.registerCommand(self, 'currentmap',self._currentmaplevel, self.cmd_currentmap, 'cmap')
-        self._adminPlugin.registerCommand(self, 'pbmapcycle',self._currentmaplevel, self.cmd_pbmapcycle, 'mapcycle')
+        self._adminPlugin.registerCommand(self, 'pbmapcycle',self._pbcyclemaplevel, self.cmd_pbmapcycle, 'mapcycle')
         self._adminPlugin.registerCommand(self, 'infoserver',self._infoserverlevel, self.cmd_infoserver, 'iserver')
         self._adminPlugin.registerCommand(self, 'statserver',self._infoserverlevel, self.cmd_statserver)
 
     def onLoadConfig(self):
         
-        self._putteamlevel = self.config.getint('settings', 'putteamlevel')
-        self._currentmaplevel = self.config.getint('settings', 'currentmaplevel')
-        self._pbmapcycle = self.config.getint('settings', 'pbmapcyclelevel')
-        self._infoserverlevel = self.config.getint('settings', 'infoserverlevel')
-        self._adminlevel = self.config.getint('settings', 'adminlevel')
-        self._modolevel = self.config.getint('settings', 'modolevel') 
-    
+        try:
+            self._putteamlevel = self.config.getint('settings', 'putteamlevel')
+        except Exception, err:
+            self.warning("Using default value %s for putteamlevel. %s" % (self._putteamlevel, err))
+        self.debug('putteamlevel : %s' % self._putteamlevel)
+
+        try:
+            self._currentmaplevel = self.config.getint('settings', 'currentmaplevel')
+        except Exception, err:
+            self.warning("Using default value %s for currentmaplevel. %s" % (self._currentmaplevel, err))
+        self.debug('currentmaplevel : %s' % self._currentmaplevel)
+
+        try:
+            self._pbcyclemaplevel = self.config.getint('settings', 'pbcyclemaplevel')
+        except Exception, err:
+            self.warning("Using default value %s for pbcyclemaplevel. %s" % (self._pbcyclemaplevel, err))
+        self.debug('pbcyclemaplevel : %s' % self._pbcyclemaplevel)
+
+        try:
+            self._infoserverlevel = self.config.getint('settings', 'infoserverlevel')
+        except Exception, err:
+            self.warning("Using default value %s for infoserverlevel. %s" % (self._infoserverlevel, err))
+        self.debug('infoserverlevel : %s' % self._infoserverlevel)
+
+        try:
+            self._adminlevel = self.config.getint('settings', 'adminlevel')
+        except Exception, err:
+            self.warning("Using default value %s for infoserverlevel. %s" % (self._adminlevel, err))
+        self.debug('adminlevel : %s' % self._adminlevel)
+
+        try:
+            self._modolevel = self.config.getint('settings', 'modolevel')
+        except Exception, err:
+            self.warning("Using default value %s for modolevel. %s" % (self._modolevel, err))
+        self.debug('modolevel : %s' % self._modolevel)
+
     def cmd_putteam(self, data, client, cmd=None):
         
         """\
@@ -87,8 +122,14 @@ class PbcommandPlugin(b3.plugin.Plugin):
         """\
         Current map
         """
+
+        map = self.console.game.mapName
+
+        if map[:4] == 'ut4_': map = map[4:]
         
-        client.message('^3Current Map is : ^5%s^7'%(self.console.game.mapName))
+        elif map[:3] == 'ut_': map = map[3:]
+
+        client.message('^3Current Map is : ^5%s^7'%(map))
         
     def cmd_infoserver(self, data, client, cmd=None):
         
