@@ -1,7 +1,7 @@
 # PBcommand Plugin
 
 __author__  = 'PtitBigorneau www.ptitbigorneau.fr'
-__version__ = '1.2'
+__version__ = '1.3'
 
 
 import b3, time, threading, thread, re
@@ -17,6 +17,7 @@ class PbcommandPlugin(b3.plugin.Plugin):
     _currentmaplevel = 1
     _pbcyclemaplevel = 1
     _infoserverlevel = 1
+    _mplevel = 2
     _adminlevel = 100
     _modolevel = 40
     _test = None
@@ -34,6 +35,7 @@ class PbcommandPlugin(b3.plugin.Plugin):
         self._adminPlugin.registerCommand(self, 'pbmapcycle',self._pbcyclemaplevel, self.cmd_pbmapcycle, 'mapcycle')
         self._adminPlugin.registerCommand(self, 'infoserver',self._infoserverlevel, self.cmd_infoserver, 'iserver')
         self._adminPlugin.registerCommand(self, 'statserver',self._infoserverlevel, self.cmd_statserver)
+        self._adminPlugin.registerCommand(self, 'messageprivate',self._mplevel, self.cmd_messageprivate, 'mp')
 
     def onLoadConfig(self):
         
@@ -64,7 +66,7 @@ class PbcommandPlugin(b3.plugin.Plugin):
         try:
             self._adminlevel = self.config.getint('settings', 'adminlevel')
         except Exception, err:
-            self.warning("Using default value %s for infoserverlevel. %s" % (self._adminlevel, err))
+            self.warning("Using default value %s for adminlevel. %s" % (self._adminlevel, err))
         self.debug('adminlevel : %s' % self._adminlevel)
 
         try:
@@ -72,6 +74,12 @@ class PbcommandPlugin(b3.plugin.Plugin):
         except Exception, err:
             self.warning("Using default value %s for modolevel. %s" % (self._modolevel, err))
         self.debug('modolevel : %s' % self._modolevel)
+
+        try:
+            self._mplevel = self.config.getint('settings', 'mplevel')
+        except Exception, err:
+            self.warning("Using default value %s for mplevel. %s" % (self._mplevel, err))
+        self.debug('mplevel : %s' % self._mplevel)
 
     def cmd_putteam(self, data, client, cmd=None):
         
@@ -164,6 +172,10 @@ class PbcommandPlugin(b3.plugin.Plugin):
         if gametype==8:
             
             gametype='Bombmode'
+
+        if gametype==9:
+            
+            gametype='Jump'
             
         cursor = self.console.storage.query("""
         SELECT *
@@ -282,10 +294,10 @@ class PbcommandPlugin(b3.plugin.Plugin):
                     else:
                         self._listmap.append(map)
         
-                    if self._test != None:
+                if self._test != None:
             
-                        if "}" in map:
-                            self._test = None
+                    if "}" in map:
+                        self._test = None
 
         thread.start_new_thread(self.mapcycle, ())
 
@@ -310,3 +322,37 @@ class PbcommandPlugin(b3.plugin.Plugin):
 
         self.client.message('%s'%(maps))
 
+    def cmd_messageprivate(self, data, client, cmd=None):
+        
+        """\
+        <client> <message> - private message
+        """
+        
+        if data:
+            
+            input = self._adminPlugin.parseUserCmd(data)
+        
+        else:
+            
+            client.message('!messageprivate <playername> <message>')
+            return
+        
+        sclient = self._adminPlugin.findClientPrompt(input[0], client)
+        
+        message = input[1]
+        
+        if not sclient:
+            
+            return False
+        
+        if not message:
+            
+            client.message('!messageprivate <playername> <message>')
+            return False
+               
+        if sclient:
+
+            sclient.message('%s^3[pm]^7: %s'%(client.exactName, message))
+        
+        else:
+            return False
