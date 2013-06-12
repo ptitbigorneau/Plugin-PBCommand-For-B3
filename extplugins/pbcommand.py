@@ -19,7 +19,6 @@ class PbcommandPlugin(b3.plugin.Plugin):
     _infoserverlevel = 1
     _mplevel = 2
     _adminlevel = 100
-    _modolevel = 40
     _test = None
     _listmap = []
 
@@ -68,12 +67,6 @@ class PbcommandPlugin(b3.plugin.Plugin):
         except Exception, err:
             self.warning("Using default value %s for adminlevel. %s" % (self._adminlevel, err))
         self.debug('adminlevel : %s' % self._adminlevel)
-
-        try:
-            self._modolevel = self.config.getint('settings', 'modolevel')
-        except Exception, err:
-            self.warning("Using default value %s for modolevel. %s" % (self._modolevel, err))
-        self.debug('modolevel : %s' % self._modolevel)
 
         try:
             self._mplevel = self.config.getint('settings', 'mplevel')
